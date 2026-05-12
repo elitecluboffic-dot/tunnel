@@ -1,6 +1,6 @@
 FROM ubuntu:22.04
 
-RUN apt-get update && apt-get install -y curl gnupg
+RUN apt-get update && apt-get install -y curl gnupg iproute2
 
 RUN curl https://pkg.cloudflareclient.com/pubkey.gpg | gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
 
@@ -8,6 +8,7 @@ RUN echo "deb [signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
 
 RUN apt-get update && apt-get install -y cloudflare-warp
 
-RUN sysctl -w net.ipv4.ip_forward=1 || true
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
 
-CMD warp-cli --accept-tos connector new $TOKEN && warp-cli connect && tail -f /dev/null
+CMD ["/start.sh"]
